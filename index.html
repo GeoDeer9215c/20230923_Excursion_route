@@ -13,11 +13,16 @@
 
 <body>
     <h1>　尾久・王子巡検</h1>
-    <input type="button" value="表示" onclick="document.getElementById('map').style.visibility = 'visible';">
-    <input type="button" value="非表示" onclick="document.getElementById('map').style.visibility = 'hidden';">
+
     <div id="map"></div>
 
     <script src="main.js"></script>
+
+    <select id="basemaps" onchange="SelectMap()">
+        <option value="gsi-tile">標準地図</option>
+        <option value="gsi-ort">【全国】淡色地図・空中写真</option>
+
+    </select>
 </body>
 
 </html>

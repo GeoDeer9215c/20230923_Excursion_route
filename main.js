@@ -1,3 +1,7 @@
+
+
+
+
 const map = new maplibregl.Map({
   container: 'map',
   center: [139.744806, 35.753748], // 中心座標
@@ -18,6 +22,13 @@ const map = new maplibregl.Map({
         // データの帰属
         attribution: "地図の出典：<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>国土地理院</a>",
       },
+      'gsi-ort': {
+        type: 'raster',
+        tiles: ['https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg'],
+        tileSize: 256,
+        //attribution:"",
+      },
+
       //巡検ルート
       route: {
         type: 'geojson',
@@ -30,6 +41,7 @@ const map = new maplibregl.Map({
         data: './data/02_point.geojson',
       }
     },
+
     // 表示するレイヤ
     layers: [
       // 背景地図として地理院地図淡色地図のラスタタイルを追加
@@ -41,6 +53,13 @@ const map = new maplibregl.Map({
         // データソースの指定
         source: 'gsi-tile',
       },
+      // {
+      //   id:'gsi-ort',
+      //   type:'raster',
+      //   source:'gsi-ort',
+      // },
+
+
       {
         id: 'route_layer',
         type: 'line',
@@ -69,22 +88,43 @@ const map = new maplibregl.Map({
   },
 });
 
+//ベース地図選択
+function SelectMap() {
 
-map.on('click', 'point_layer', function (e) {
-  var coordinates = e.features[0].geometry.coordinates.slice();
-  var name = e.features[0].properties.name;
+  var BaseMapName = document.getElementById('basemaps').value;
+  var zoomlv = map.getZoom()
 
-  while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+  //レイヤ削除【ベースマップ】
+  DeletetBaseLayers();
+
+
+  // 空中写真切替え 
+  if (BaseMapName == "gsi-tile") {
+    map.addLayer({
+      'id': 'gsi-tile',
+      type: 'raster',
+      'source': 'gsi-tile',
+
+    });
   }
-  // ポップアップを表示する
-  new maplibregl.Popup({
-    offset: 10, // ポップアップの位置
-    closeButton: false, // 閉じるボタンの表示
-  })
-    .setLngLat(coordinates)
-    .setHTML(name)
-    .addTo(map);
-});
+     if (BaseMapName == "gsi-ort") {
+       map.addLayer({
+         'id': 'gsi-ort',
+         type: 'raster',
+         'source': 'gsi-ort',
+  
+       });
+      }
 
-document.getElementById('map').style.visibility = 'vissible';
+
+
+
+
+};
+
+//レイヤー削除【ベースマップ】
+function DeletetBaseLayers() {
+  if (map.getLayer('gsi-tile')) { map.removeLayer('gsi-tile') };
+  if (map.getLayer('gsi-ort')) { map.removeLayer('gsi-ort') };
+
+};
